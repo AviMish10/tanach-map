@@ -6,4 +6,6 @@ window.CHARACTERS = {
   'othniel': { name: 'עתניאל בן קנז' },
   'achsah':  { name: 'עכסה' },
   'joshua':  { name: 'יהושע בן נון' },
+  'ehud':    { name: 'אהוד בן גרא' },
+  'eglon':   { name: 'עגלון מלך מואב' },
 };

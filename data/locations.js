@@ -29,4 +29,6 @@ window.LOCATIONS = {
   'akko':            { name: 'עכו',                                                 coords: [32.9270, 35.0820], category: 'city' },
   'bokhim':          { name: 'בוכים',                 altName: 'ליד בית אל',        coords: [31.9400, 35.2200], category: 'cult' },
   'timnath-heres':   { name: 'תמנת חרס',              altName: 'כפר כיפל חארס',     coords: [32.1400, 35.1300], category: 'cult' },
+  'arvot-moav':      { name: 'ערבות מואב',             altName: 'בית עגלון',          coords: [31.8700, 35.6500], category: 'foreign' },
+  'seirath':         { name: 'השעירתה',                altName: 'יער הר אפריים',      coords: [32.0100, 35.2400], category: 'mountain' },
 };
