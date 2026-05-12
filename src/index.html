@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>אטלס התנ"ך · מפה אישית</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700;900&family=Assistant:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #fbf6ec;
+    --cream-2: #f3ead7;
+    --cream-3: #e8dcc1;
+    --ink: #1f2419;
+    --ink-soft: #4a4f3f;
+    --ink-light: #6b7060;
+
+    --emerald: #2c6f4d;
+    --emerald-dark: #1f5238;
+    --emerald-light: #4a9171;
+
+    --burgundy: #a83a2c;
+    --burgundy-dark: #7a2620;
+    --terracotta: #d2693a;
+
+    --gold: #d4a52c;
+    --gold-soft: #e8c365;
+    --amber: #f0a830;
+
+    --teal: #2e8a9e;
+    --teal-dark: #1f6275;
+    --sky: #5b9ec9;
+
+    --plum: #8a3a6f;
+    --rose: #c25b75;
+    --indigo: #4a4f8a;
+
+    --shadow-sm: 0 2px 6px rgba(45, 60, 35, 0.12);
+    --shadow-md: 0 4px 16px rgba(45, 60, 35, 0.18);
+    --shadow-lg: 0 8px 28px rgba(45, 60, 35, 0.22);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    font-family: 'Assistant', system-ui, sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    overflow: hidden;
+  }
+
+  #app {
+    height: 100vh;
+    position: relative;
+  }
+
+  /* ===== TOP BAR (slim) ===== */
+  .topbar {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    left: 12px;
+    z-index: 1000;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    pointer-events: none;
+  }
+  .topbar > * { pointer-events: auto; }
+
+  .brand-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, var(--emerald-dark) 0%, var(--emerald) 100%);
+    color: white;
+    padding: 8px 16px 8px 12px;
+    border-radius: 100px;
+    box-shadow: var(--shadow-md);
+    border: 2px solid var(--gold);
+  }
+  .brand-mark {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--amber) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 19px;
+    font-weight: 900;
+    color: var(--emerald-dark);
+    flex-shrink: 0;
+  }
+  .brand-title {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .brand-subtitle {
+    font-size: 10px;
+    color: var(--gold-soft);
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+  }
+
+  .search-pill {
+    flex: 1;
+    max-width: 380px;
+    position: relative;
+  }
+  .search-pill input {
+    width: 100%;
+    padding: 11px 18px 11px 42px;
+    background: white;
+    border: 2px solid white;
+    border-radius: 100px;
+    font-family: 'Assistant', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    box-shadow: var(--shadow-md);
+    transition: all 0.2s;
+  }
+  .search-pill input::placeholder { color: var(--ink-light); }
+  .search-pill input:focus {
+    outline: none;
+    border-color: var(--gold);
+  }
+  .search-pill::after {
+    content: '⌕';
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--ink-light);
+    font-size: 20px;
+    pointer-events: none;
+  }
+  .search-results {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    left: 0;
+    background: white;
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    max-height: 320px;
+    overflow-y: auto;
+    display: none;
+  }
+  .search-results.open { display: block; }
+  .search-result {
+    padding: 10px 16px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--cream-2);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background 0.15s;
+  }
+  .search-result:hover { background: var(--cream); }
+  .search-result:last-child { border-bottom: none; }
+  .search-result-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    border: 2px solid white;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.1);
+  }
+  .search-result-name { font-weight: 600; color: var(--ink); font-size: 14px; }
+  .search-result-meta { font-size: 11px; color: var(--ink-light); margin-right: auto; }
+
+  .topbar-btn {
+    background: white;
+    border: 2px solid white;
+    border-radius: 100px;
+    padding: 10px 16px;
+    font-family: 'Assistant', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--ink);
+    cursor: pointer;
+    box-shadow: var(--shadow-md);
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .topbar-btn:hover { border-color: var(--gold); }
+  .topbar-btn.active {
+    background: linear-gradient(135deg, var(--emerald) 0%, var(--emerald-dark) 100%);
+    color: white;
+    border-color: var(--gold);
+  }
+  .topbar-btn .badge {
+    background: var(--burgundy);
+    color: white;
+    padding: 1px 7px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .topbar-btn.active .badge { background: var(--gold); color: var(--ink); }
+
+  /* ===== FILTER DRAWER ===== */
+  .drawer {
+    position: absolute;
+    top: 70px;
+    right: 12px;
+    width: 340px;
+    max-height: calc(100vh - 90px);
+    background: white;
+    border-radius: 14px;
+    box-shadow: var(--shadow-lg);
+    z-index: 999;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(370px);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid var(--cream-2);
+  }
+  .drawer.open { transform: translateX(0); }
+  .drawer-header {
+    padding: 14px 18px;
+    background: linear-gradient(135deg, var(--emerald-dark) 0%, var(--emerald) 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .drawer-title {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 17px;
+    font-weight: 700;
+  }
+  .drawer-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 22px;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+  }
+  .drawer-body {
+    overflow-y: auto;
+    padding: 4px 0 12px;
+  }
+  .drawer-body::-webkit-scrollbar { width: 6px; }
+  .drawer-body::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
+
+  .filter-section {
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--cream-2);
+  }
+  .filter-section:last-child { border-bottom: none; }
+  .filter-section-title {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .filter-clear {
+    background: none;
+    border: none;
+    color: var(--ink-light);
+    font-size: 11px;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+  .filter-clear:hover { color: var(--burgundy); }
+
+  .check-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--ink);
+    transition: background 0.15s;
+  }
+  .check-item:hover { background: var(--cream); }
+  .check-item input { display: none; }
+  .check-box {
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--ink-light);
+    border-radius: 4px;
+    flex-shrink: 0;
+    position: relative;
+    transition: all 0.15s;
+  }
+  .check-item.checked .check-box {
+    background: var(--emerald);
+    border-color: var(--emerald);
+  }
+  .check-item.checked .check-box::after {
+    content: '✓';
+    position: absolute;
+    inset: 0;
+    color: white;
+    font-size: 12px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .check-swatch {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .check-count {
+    margin-right: auto;
+    color: var(--ink-light);
+    font-size: 11px;
+  }
+
+  .character-card {
+    background: var(--cream);
+    border-radius: 8px;
+    padding: 8px 10px;
+    margin-bottom: 6px;
+  }
+  .character-card.expanded {
+    background: white;
+    border: 1px solid var(--gold);
+    box-shadow: var(--shadow-sm);
+  }
+  .character-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 4px 2px;
+  }
+  .character-name {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--ink);
+  }
+  .character-count {
+    margin-right: auto;
+    background: var(--emerald);
+    color: white;
+    padding: 1px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .character-chevron {
+    color: var(--ink-light);
+    transition: transform 0.2s;
+  }
+  .character-card.expanded .character-chevron { transform: rotate(180deg); }
+  .character-journeys {
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    padding-top: 8px;
+    margin-top: 4px;
+    border-top: 1px dashed var(--cream-3);
+  }
+  .character-card.expanded .character-journeys { display: flex; }
+  .journey-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background 0.15s;
+  }
+  .journey-toggle:hover { background: var(--cream); }
+  .journey-toggle.active { background: linear-gradient(90deg, transparent 0%, rgba(212,165,44,0.15) 100%); }
+  .journey-color {
+    width: 12px;
+    height: 4px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .journey-name {
+    flex: 1;
+    color: var(--ink);
+  }
+  .journey-meta {
+    font-size: 10px;
+    color: var(--ink-light);
+  }
+
+  /* ===== PLACE PANEL (slides up from bottom on mobile, side on desktop) ===== */
+  .place-panel {
+    position: absolute;
+    top: 70px;
+    left: 12px;
+    width: 420px;
+    max-height: calc(100vh - 90px);
+    background: white;
+    border-radius: 14px;
+    box-shadow: var(--shadow-lg);
+    z-index: 998;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(-450px);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid var(--cream-2);
+  }
+  .place-panel.open { transform: translateX(0); }
+
+  .place-panel-header {
+    padding: 18px 20px 14px;
+    background: linear-gradient(135deg, var(--emerald) 0%, var(--emerald-dark) 100%);
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+  .place-panel-header::before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    left: -40px;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(212, 165, 44, 0.25) 0%, transparent 70%);
+  }
+  .place-panel-close {
+    position: absolute;
+    top: 12px;
+    left: 14px;
+    background: rgba(255,255,255,0.15);
+    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+  }
+  .place-panel-close:hover { background: rgba(255,255,255,0.3); }
+  .place-category-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    color: var(--gold-soft);
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    position: relative;
+    z-index: 1;
+  }
+  .place-name {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.1;
+    margin-top: 6px;
+    position: relative;
+    z-index: 1;
+  }
+  .place-name-alt {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 14px;
+    color: var(--gold-soft);
+    margin-top: 2px;
+    font-style: italic;
+    position: relative;
+    z-index: 1;
+  }
+  .place-stats {
+    display: flex;
+    gap: 14px;
+    margin-top: 10px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.85);
+    position: relative;
+    z-index: 1;
+  }
+  .place-stat-icon { color: var(--gold-soft); }
+
+  .place-panel-body {
+    overflow-y: auto;
+    padding: 4px 0;
+  }
+  .place-panel-body::-webkit-scrollbar { width: 6px; }
+  .place-panel-body::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
+
+  .chapter-card {
+    margin: 12px 16px;
+    background: var(--cream);
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--cream-2);
+    transition: all 0.2s;
+  }
+  .chapter-card:hover {
+    box-shadow: var(--shadow-sm);
+    border-color: var(--gold);
+  }
+  .chapter-card-header {
+    padding: 10px 14px;
+    background: white;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--cream-2);
+  }
+  .chapter-tag {
+    background: linear-gradient(135deg, var(--burgundy) 0%, var(--burgundy-dark) 100%);
+    color: white;
+    padding: 3px 9px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: 'Frank Ruhl Libre', serif;
+    flex-shrink: 0;
+  }
+  .chapter-card-title {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--ink);
+    line-height: 1.2;
+    flex: 1;
+  }
+  .chapter-card-body {
+    padding: 12px 14px 14px;
+  }
+  .chapter-card-summary {
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    margin-bottom: 8px;
+  }
+  .chapter-quote {
+    background: linear-gradient(135deg, rgba(212, 165, 44, 0.12) 0%, rgba(212, 165, 44, 0.04) 100%);
+    border-right: 3px solid var(--gold);
+    padding: 8px 12px;
+    border-radius: 0 4px 4px 0;
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    font-style: italic;
+    margin: 8px 0;
+  }
+  .chapter-insight {
+    background: linear-gradient(135deg, rgba(44, 111, 77, 0.08) 0%, rgba(44, 111, 77, 0.02) 100%);
+    border-right: 3px solid var(--emerald);
+    padding: 8px 12px;
+    border-radius: 0 4px 4px 0;
+    font-size: 12px;
+    line-height: 1.55;
+    color: var(--ink);
+    margin-top: 8px;
+  }
+  .insight-label {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--emerald);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 3px;
+  }
+  .chapter-characters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 8px;
+  }
+  .character-pill {
+    padding: 2px 8px;
+    background: var(--cream-2);
+    color: var(--ink-soft);
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .journey-card {
+    margin: 12px 16px;
+    background: linear-gradient(135deg, rgba(168, 58, 44, 0.06) 0%, rgba(168, 58, 44, 0.02) 100%);
+    border: 1px dashed var(--burgundy);
+    border-radius: 10px;
+    padding: 10px 14px;
+  }
+  .journey-card-title {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--burgundy-dark);
+    margin-bottom: 4px;
+  }
+  .journey-card-meta {
+    font-size: 11px;
+    color: var(--ink-light);
+    margin-bottom: 8px;
+  }
+  .journey-card-btn {
+    background: linear-gradient(135deg, var(--burgundy) 0%, var(--burgundy-dark) 100%);
+    color: white;
+    border: none;
+    padding: 5px 12px;
+    border-radius: 12px;
+    font-family: 'Assistant', sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  /* ===== JOURNEY LEGEND (bottom) ===== */
+  .journey-legend {
+    position: absolute;
+    bottom: 16px;
+    right: 12px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: var(--shadow-md);
+    padding: 10px 14px;
+    max-width: 280px;
+    z-index: 700;
+    border: 1px solid var(--cream-2);
+    display: none;
+  }
+  .journey-legend.visible { display: block; }
+  .journey-legend-title {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .journey-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    margin-top: 4px;
+  }
+  .journey-legend-line {
+    width: 24px;
+    height: 3px;
+    border-radius: 2px;
+  }
+
+  /* ===== MAP ===== */
+  #map {
+    height: 100%;
+    width: 100%;
+    background: #c5d8b4;
+  }
+
+  /* PINS — by category */
+  .pin-marker {
+    position: relative;
+    width: 32px;
+    height: 40px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+  .pin-marker:hover { transform: scale(1.15) translateY(-2px); }
+  .pin-marker.active { transform: scale(1.25) translateY(-3px); }
+  .pin-shape {
+    width: 32px;
+    height: 32px;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    border: 2.5px solid white;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(0, 0, 0, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .pin-marker.active .pin-shape {
+    box-shadow: 0 0 0 4px rgba(212, 165, 44, 0.5), 0 6px 18px rgba(0, 0, 0, 0.45);
+  }
+  .pin-symbol {
+    transform: rotate(45deg);
+    color: white;
+    font-size: 14px;
+    line-height: 1;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  }
+
+  /* category colors */
+  .pin-city      { background: linear-gradient(135deg, #c84a3a 0%, #8b2620 100%); }
+  .pin-mountain  { background: linear-gradient(135deg, #9b6b3a 0%, #5c3e1c 100%); }
+  .pin-water     { background: linear-gradient(135deg, #4aaac0 0%, #1f6275 100%); }
+  .pin-cult      { background: linear-gradient(135deg, #d4a52c 0%, #9a7820 100%); }
+  .pin-battle    { background: linear-gradient(135deg, #6b3a55 0%, #3d1f30 100%); }
+  .pin-desert    { background: linear-gradient(135deg, #e8c365 0%, #b8801c 100%); }
+  .pin-foreign   { background: linear-gradient(135deg, #4a4f8a 0%, #2a2e5a 100%); }
+
+  /* Journey-stop badge (number) — overlays the pin when in a journey */
+  .pin-stop-number {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: var(--gold);
+    color: var(--ink);
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Frank Ruhl Libre', serif;
+    font-weight: 800;
+    font-size: 12px;
+    border: 2px solid white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    z-index: 2;
+  }
+
+  /* Leaflet popup */
+  .leaflet-popup-content-wrapper {
+    background: white;
+    border-radius: 10px;
+    box-shadow: var(--shadow-lg);
+    padding: 0;
+    border: 1px solid var(--cream-2);
+  }
+  .leaflet-popup-content {
+    margin: 0;
+    padding: 10px 14px;
+    direction: rtl;
+    text-align: right;
+    font-family: 'Assistant', sans-serif;
+  }
+  .popup-name {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--emerald-dark);
+  }
+  .popup-meta {
+    font-size: 11px;
+    color: var(--ink-light);
+    margin-top: 2px;
+  }
+  .leaflet-popup-tip { background: white; }
+  .leaflet-control-attribution { font-size: 10px; }
+
+  /* Cluster styles */
+  .marker-cluster {
+    background: rgba(212, 165, 44, 0.4) !important;
+  }
+  .marker-cluster div {
+    background: linear-gradient(135deg, var(--gold) 0%, var(--amber) 100%) !important;
+    color: var(--emerald-dark) !important;
+    font-family: 'Frank Ruhl Libre', serif !important;
+    font-weight: 800 !important;
+    border: 2px solid white !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25) !important;
+  }
+
+  /* Mobile */
+  @media (max-width: 800px) {
+    .topbar { flex-wrap: wrap; }
+    .brand-pill { padding: 6px 12px 6px 8px; }
+    .brand-title { font-size: 14px; }
+    .brand-subtitle { font-size: 9px; }
+    .search-pill { width: 100%; max-width: none; order: 3; }
+    .drawer, .place-panel {
+      width: calc(100% - 24px);
+      max-height: 70vh;
+    }
+    .place-panel {
+      top: auto;
+      bottom: 12px;
+      left: 12px;
+      right: 12px;
+      transform: translateY(100%);
+      width: auto;
+    }
+    .place-panel.open { transform: translateY(0); }
+    .journey-legend {
+      max-width: calc(100% - 24px);
+      bottom: 12px;
+      left: 12px;
+      right: 12px;
+    }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="topbar">
+    <div class="brand-pill">
+      <div class="brand-mark">ת</div>
+      <div>
+        <div class="brand-title">אטלס התנ"ך</div>
+        <div class="brand-subtitle">מפה אישית · בהשראת תנ"ך ישראלי</div>
+      </div>
+    </div>
+    <div class="search-pill">
+      <input type="text" id="search" placeholder="חיפוש מקום, דמות או פרק...">
+      <div class="search-results" id="search-results"></div>
+    </div>
+    <button class="topbar-btn" id="filter-btn">
+      <span>סינון ושכבות</span>
+      <span class="badge" id="filter-badge" style="display:none">0</span>
+    </button>
+  </div>
+
+  <!-- Filter drawer -->
+  <div class="drawer" id="drawer">
+    <div class="drawer-header">
+      <div class="drawer-title">סינון ושכבות</div>
+      <button class="drawer-close" id="drawer-close">×</button>
+    </div>
+    <div class="drawer-body" id="drawer-body"></div>
+  </div>
+
+  <!-- Place panel -->
+  <div class="place-panel" id="place-panel">
+    <div id="place-panel-content"></div>
+  </div>
+
+  <!-- Journey legend -->
+  <div class="journey-legend" id="journey-legend">
+    <div class="journey-legend-title">מסעות מוצגים</div>
+    <div id="journey-legend-items"></div>
+  </div>
+
+  <div id="map"></div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<script src="../data/categories.js"></script>
+<script src="../data/locations.js"></script>
+<script src="../data/characters.js"></script>
+<script src="../data/chapters/mb-2.js"></script>
+<script src="../data/chapters/shoftim-1.js"></script>
+<script src="../data/chapters/shoftim-2.js"></script>
+<script src="../data/journeys/farewell-eliyahu-elisha.js"></script>
+<script src="../data/journeys/judah-conquest.js"></script>
+<script>
+
+/* =============================================================
+   STATE
+   ============================================================= */
+const state = {
+  categoryFilters: new Set(Object.keys(CATEGORIES)), // all on by default
+  activeJourneys: new Set(),
+  selectedLocationId: null,
+  drawerOpen: false,
+  placePanelOpen: false,
+  expandedCharacter: null,
+};
+
+/* =============================================================
+   MAP
+   ============================================================= */
+const map = L.map('map', {
+  zoomControl: true,
+  attributionControl: true,
+  zoomSnap: 0.5
+}).setView([31.95, 35.35], 10);
+
+L.control.zoom({ position: 'topleft' }); // already in default
+
+const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; OpenStreetMap',
+  maxZoom: 18,
+  subdomains: 'abc'
+});
+const ihmLayer = L.tileLayer('https://israelhiking.osm.org.il/Hebrew/Tiles/{z}/{x}/{y}.png', {
+  attribution: '&copy; Israel Hiking Map',
+  maxZoom: 16
+});
+
+osmLayer.addTo(map);
+L.control.layers({
+  'מפה רגילה': osmLayer,
+  'מפה טופוגרפית': ihmLayer
+}, null, { position: 'bottomleft' }).addTo(map);
+
+/* =============================================================
+   PINS & JOURNEYS
+   ============================================================= */
+const markerCluster = L.markerClusterGroup({
+  maxClusterRadius: 40,
+  showCoverageOnHover: false,
+  disableClusteringAtZoom: 11
+});
+map.addLayer(markerCluster);
+
+const markers = {}; // locationId -> marker
+const journeyLines = {}; // journeyId -> polyline
+
+function toHebrewNumeral(n) {
+  const ones    = ['', 'א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט'];
+  const tens    = ['', 'י', 'כ', 'ל', 'מ', 'נ', 'ס', 'ע', 'פ', 'צ'];
+  const hundreds = ['', 'ק', 'ר', 'ש', 'ת'];
+  let result = '', rem = n;
+  if (rem >= 400) { const h = Math.floor(rem / 400); result += 'ת'.repeat(h); rem -= h * 400; }
+  if (rem >= 100) { result += hundreds[Math.floor(rem / 100)]; rem %= 100; }
+  if (rem === 15) { result += 'טו'; rem = 0; }
+  else if (rem === 16) { result += 'טז'; rem = 0; }
+  else { if (rem >= 10) { result += tens[Math.floor(rem / 10)]; rem %= 10; } if (rem) result += ones[rem]; }
+  if (result.length > 1) result = result.slice(0, -1) + '״' + result.slice(-1);
+  return result;
+}
+
+function chaptersForLocation(locId) {
+  const results = [];
+  Object.entries(CHAPTERS).forEach(([cid, ch]) => {
+    const app = ch.appearances.find(a => a.locationId === locId);
+    if (app) results.push({ chapterId: cid, chapter: ch, appearance: app });
+  });
+  return results;
+}
+
+function journeysForLocation(locId) {
+  return Object.entries(JOURNEYS)
+    .filter(([_, j]) => j.stops.some(s => s.locationId === locId))
+    .map(([id, j]) => ({ id, journey: j }));
+}
+
+function getStopNumberForLocation(locId) {
+  // If any active journey passes through this location, return its order #
+  for (const jid of state.activeJourneys) {
+    const journey = JOURNEYS[jid];
+    const stop = journey.stops.find(s => s.locationId === locId);
+    if (stop) return stop.order;
+  }
+  return null;
+}
+
+function makePinIcon(locId, isActive = false) {
+  const loc = LOCATIONS[locId];
+  const cat = CATEGORIES[loc.category];
+  const stopNum = getStopNumberForLocation(locId);
+  return L.divIcon({
+    className: 'pin-wrapper',
+    html: `
+      <div class="pin-marker ${isActive ? 'active' : ''}" data-loc="${locId}">
+        <div class="pin-shape pin-${loc.category}">
+          <span class="pin-symbol">${cat.symbol}</span>
+        </div>
+        ${stopNum ? `<div class="pin-stop-number">${stopNum}</div>` : ''}
+      </div>
+    `,
+    iconSize: [32, 40],
+    iconAnchor: [16, 36],
+    popupAnchor: [0, -32]
+  });
+}
+
+function renderPins() {
+  markerCluster.clearLayers();
+  Object.keys(markers).forEach(k => delete markers[k]);
+
+  // Visible locations = those matching category filter
+  Object.entries(LOCATIONS).forEach(([locId, loc]) => {
+    if (!state.categoryFilters.has(loc.category)) return;
+    const icon = makePinIcon(locId, locId === state.selectedLocationId);
+    const marker = L.marker(loc.coords, { icon });
+    const chapters = chaptersForLocation(locId);
+    marker.bindPopup(`
+      <div class="popup-name">${loc.name}</div>
+      <div class="popup-meta">${chapters.length} פרק${chapters.length === 1 ? '' : 'ים'} · ${CATEGORIES[loc.category].label}</div>
+    `, { offset: [0, -10] });
+    marker.on('click', () => selectLocation(locId));
+    markers[locId] = marker;
+    markerCluster.addLayer(marker);
+  });
+}
+
+function renderJourneys() {
+  // Remove all existing journey lines
+  Object.values(journeyLines).forEach(line => map.removeLayer(line));
+  Object.keys(journeyLines).forEach(k => delete journeyLines[k]);
+
+  // Draw active journeys
+  state.activeJourneys.forEach(jid => {
+    const journey = JOURNEYS[jid];
+    const coords = journey.stops
+      .sort((a, b) => a.order - b.order)
+      .map(s => LOCATIONS[s.locationId].coords);
+    if (coords.length > 1) {
+      const line = L.polyline(coords, {
+        color: journey.color,
+        weight: 3.5,
+        opacity: 0.75,
+        dashArray: '10, 7',
+        lineCap: 'round',
+        lineJoin: 'round'
+      }).addTo(map);
+      journeyLines[jid] = line;
+    }
+  });
+
+  renderJourneyLegend();
+  renderPins(); // refresh pin numbers
+}
+
+function renderJourneyLegend() {
+  const legend = document.getElementById('journey-legend');
+  const items = document.getElementById('journey-legend-items');
+  if (!state.activeJourneys.size) {
+    legend.classList.remove('visible');
+    return;
+  }
+  legend.classList.add('visible');
+  items.innerHTML = Array.from(state.activeJourneys).map(jid => {
+    const j = JOURNEYS[jid];
+    return `
+      <div class="journey-legend-item">
+        <div class="journey-legend-line" style="background:${j.color}"></div>
+        <span>${j.name}</span>
+      </div>
+    `;
+  }).join('');
+}
+
+/* =============================================================
+   PLACE PANEL
+   ============================================================= */
+function selectLocation(locId) {
+  state.selectedLocationId = locId;
+  state.placePanelOpen = true;
+
+  const loc = LOCATIONS[locId];
+  const chapters = chaptersForLocation(locId);
+  const relatedJourneys = journeysForLocation(locId);
+  const cat = CATEGORIES[loc.category];
+
+  // Sort chapters: ones the user has "studied" first (those in CHAPTERS), then placeholders
+  const sorted = chapters; // for now all are real
+
+  const chaptersHtml = sorted.map(({ chapterId, chapter, appearance }) => `
+    <div class="chapter-card">
+      <div class="chapter-card-header">
+        <span class="chapter-tag">${chapter.book} פרק ${toHebrewNumeral(chapter.num)}</span>
+        <div class="chapter-card-title">${chapter.title}</div>
+      </div>
+      <div class="chapter-card-body">
+        <div class="chapter-card-summary">${appearance.summary}</div>
+        ${appearance.quote ? `<div class="chapter-quote">${appearance.quote}</div>` : ''}
+        ${appearance.description ? `<div style="font-size:13px;line-height:1.55;color:var(--ink);margin-top:8px">${appearance.description}</div>` : ''}
+        ${appearance.insight ? `
+          <div class="chapter-insight">
+            <span class="insight-label">לעיון והרחבה</span>
+            ${appearance.insight}
+          </div>
+        ` : ''}
+        ${appearance.characters ? `
+          <div class="chapter-characters">
+            ${appearance.characters.map(c => `<span class="character-pill">${c}</span>`).join('')}
+          </div>
+        ` : ''}
+      </div>
+    </div>
+  `).join('');
+
+  const journeysHtml = relatedJourneys.length ? relatedJourneys.map(({ id, journey }) => {
+    const isActive = state.activeJourneys.has(id);
+    const charNames = journey.characters.map(cid => CHARACTERS[cid].name).join(' · ');
+    return `
+      <div class="journey-card">
+        <div class="journey-card-title">${journey.name}</div>
+        <div class="journey-card-meta">${charNames} · ${journey.stops.length} תחנות</div>
+        <button class="journey-card-btn" data-journey="${id}">
+          ${isActive ? '✓ מוצג במפה' : 'הצג מסע במפה'}
+        </button>
+      </div>
+    `;
+  }).join('') : '';
+
+  document.getElementById('place-panel-content').innerHTML = `
+    <div class="place-panel-header">
+      <button class="place-panel-close" id="place-close">×</button>
+      <span class="place-category-badge">${cat.label}</span>
+      <div class="place-name">${loc.name}</div>
+      ${loc.altName ? `<div class="place-name-alt">${loc.altName}</div>` : ''}
+      <div class="place-stats">
+        <div><span class="place-stat-icon">📖</span> ${chapters.length} פרק${chapters.length === 1 ? '' : 'ים'}</div>
+        ${relatedJourneys.length ? `<div><span class="place-stat-icon">⤵</span> ${relatedJourneys.length} מסע${relatedJourneys.length === 1 ? '' : 'ים'}</div>` : ''}
+      </div>
+    </div>
+    <div class="place-panel-body">
+      ${journeysHtml}
+      ${chaptersHtml || '<div style="padding:20px;text-align:center;color:var(--ink-light);font-size:13px">עוד לא נטען חומר על מקום זה</div>'}
+    </div>
+  `;
+
+  document.getElementById('place-panel').classList.add('open');
+  document.getElementById('place-close').addEventListener('click', closePlace);
+
+  document.querySelectorAll('[data-journey]').forEach(btn => {
+    btn.addEventListener('click', () => toggleJourney(btn.dataset.journey));
+  });
+
+  renderPins(); // re-render to highlight active pin
+  // Pan map to selected location
+  map.flyTo(loc.coords, Math.max(map.getZoom(), 11), { duration: 0.6 });
+}
+
+function closePlace() {
+  state.placePanelOpen = false;
+  state.selectedLocationId = null;
+  document.getElementById('place-panel').classList.remove('open');
+  renderPins();
+}
+
+/* =============================================================
+   DRAWER (filter panel)
+   ============================================================= */
+function renderDrawer() {
+  const body = document.getElementById('drawer-body');
+
+  // Count locations per category
+  const catCounts = {};
+  Object.values(LOCATIONS).forEach(l => {
+    catCounts[l.category] = (catCounts[l.category] || 0) + 1;
+  });
+
+  // Character → journeys
+  const charJourneys = {};
+  Object.entries(JOURNEYS).forEach(([jid, j]) => {
+    j.characters.forEach(cid => {
+      if (!charJourneys[cid]) charJourneys[cid] = [];
+      charJourneys[cid].push({ id: jid, journey: j });
+    });
+  });
+
+  const categoriesHtml = Object.entries(CATEGORIES).map(([key, cat]) => {
+    const count = catCounts[key] || 0;
+    const checked = state.categoryFilters.has(key);
+    return `
+      <div class="check-item ${checked ? 'checked' : ''}" data-cat="${key}">
+        <div class="check-box"></div>
+        <div class="check-swatch" style="background:${cat.color}"></div>
+        <div>${cat.label}</div>
+        <div class="check-count">${count}</div>
+      </div>
+    `;
+  }).join('');
+
+  const charactersHtml = Object.entries(CHARACTERS).map(([cid, char]) => {
+    const journeys = charJourneys[cid] || [];
+    const isExpanded = state.expandedCharacter === cid;
+    return `
+      <div class="character-card ${isExpanded ? 'expanded' : ''}">
+        <div class="character-header" data-char="${cid}">
+          <div class="character-name">${char.name}</div>
+          <div class="character-count">${journeys.length}</div>
+          <div class="character-chevron">▾</div>
+        </div>
+        <div class="character-journeys">
+          ${journeys.map(({ id, journey }) => {
+            const active = state.activeJourneys.has(id);
+            return `
+              <div class="journey-toggle ${active ? 'active' : ''}" data-journey="${id}">
+                <div class="journey-color" style="background:${journey.color}"></div>
+                <div class="journey-name">${journey.name}</div>
+                <div class="journey-meta">${journey.stops.length} תחנות</div>
+                ${active ? '<span style="color:var(--gold);font-weight:700">✓</span>' : ''}
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  body.innerHTML = `
+    <div class="filter-section">
+      <div class="filter-section-title">
+        <span>קטגוריות מקומות</span>
+        <button class="filter-clear" data-action="all-cats">הצג הכל</button>
+      </div>
+      <div class="check-list">${categoriesHtml}</div>
+    </div>
+    <div class="filter-section">
+      <div class="filter-section-title">
+        <span>דמויות ומסעות</span>
+        ${state.activeJourneys.size ? `<button class="filter-clear" data-action="clear-journeys">נקה</button>` : ''}
+      </div>
+      <div>${charactersHtml}</div>
+    </div>
+  `;
+
+  // Wire up
+  body.querySelectorAll('[data-cat]').forEach(el => {
+    el.addEventListener('click', () => {
+      const cat = el.dataset.cat;
+      if (state.categoryFilters.has(cat)) state.categoryFilters.delete(cat);
+      else state.categoryFilters.add(cat);
+      renderDrawer();
+      renderPins();
+      updateFilterBadge();
+    });
+  });
+  body.querySelectorAll('[data-char]').forEach(el => {
+    el.addEventListener('click', () => {
+      const cid = el.dataset.char;
+      state.expandedCharacter = state.expandedCharacter === cid ? null : cid;
+      renderDrawer();
+    });
+  });
+  body.querySelectorAll('[data-journey]').forEach(el => {
+    el.addEventListener('click', () => toggleJourney(el.dataset.journey));
+  });
+  body.querySelectorAll('[data-action="clear-journeys"]').forEach(el => {
+    el.addEventListener('click', () => {
+      state.activeJourneys.clear();
+      renderDrawer();
+      renderJourneys();
+      updateFilterBadge();
+    });
+  });
+  body.querySelectorAll('[data-action="all-cats"]').forEach(el => {
+    el.addEventListener('click', () => {
+      state.categoryFilters = new Set(Object.keys(CATEGORIES));
+      renderDrawer();
+      renderPins();
+      updateFilterBadge();
+    });
+  });
+}
+
+function toggleJourney(jid) {
+  if (state.activeJourneys.has(jid)) state.activeJourneys.delete(jid);
+  else state.activeJourneys.add(jid);
+  renderJourneys();
+  renderDrawer();
+  if (state.selectedLocationId) selectLocation(state.selectedLocationId); // refresh button label
+  updateFilterBadge();
+}
+
+function updateFilterBadge() {
+  const badge = document.getElementById('filter-badge');
+  const total = state.activeJourneys.size +
+                (Object.keys(CATEGORIES).length - state.categoryFilters.size);
+  if (total > 0) {
+    badge.style.display = 'inline-block';
+    badge.textContent = total;
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+/* =============================================================
+   SEARCH
+   ============================================================= */
+function setupSearch() {
+  const input = document.getElementById('search');
+  const results = document.getElementById('search-results');
+
+  input.addEventListener('input', () => {
+    const q = input.value.trim();
+    if (!q) { results.classList.remove('open'); return; }
+    const found = [];
+    Object.entries(LOCATIONS).forEach(([id, l]) => {
+      if (l.name.includes(q) || (l.altName && l.altName.includes(q))) {
+        found.push({ kind: 'location', id, name: l.name, meta: CATEGORIES[l.category].label, color: CATEGORIES[l.category].color });
+      }
+    });
+    Object.entries(CHAPTERS).forEach(([id, c]) => {
+      if (`${c.book} ${c.num} ${c.title}`.includes(q)) {
+        found.push({ kind: 'chapter', id, name: c.title, meta: `${c.book} פרק ${toHebrewNumeral(c.num)}`, color: '#a83a2c' });
+      }
+    });
+    Object.entries(CHARACTERS).forEach(([id, c]) => {
+      if (c.name.includes(q)) {
+        found.push({ kind: 'character', id, name: c.name, meta: 'דמות', color: '#2c6f4d' });
+      }
+    });
+    if (!found.length) {
+      results.innerHTML = `<div class="search-result"><span style="color:#888">לא נמצאו תוצאות</span></div>`;
+    } else {
+      results.innerHTML = found.slice(0, 8).map(r => `
+        <div class="search-result" data-kind="${r.kind}" data-id="${r.id}">
+          <div class="search-result-dot" style="background:${r.color}"></div>
+          <div class="search-result-name">${r.name}</div>
+          <div class="search-result-meta">${r.meta}</div>
+        </div>
+      `).join('');
+    }
+    results.classList.add('open');
+  });
+
+  results.addEventListener('click', e => {
+    const item = e.target.closest('.search-result');
+    if (!item || !item.dataset.id) return;
+    if (item.dataset.kind === 'location') {
+      selectLocation(item.dataset.id);
+    } else if (item.dataset.kind === 'character') {
+      state.expandedCharacter = item.dataset.id;
+      state.drawerOpen = true;
+      document.getElementById('drawer').classList.add('open');
+      renderDrawer();
+    } else if (item.dataset.kind === 'chapter') {
+      // Find a location in this chapter and focus there
+      const ch = CHAPTERS[item.dataset.id];
+      if (ch && ch.appearances.length) selectLocation(ch.appearances[0].locationId);
+    }
+    input.value = '';
+    results.classList.remove('open');
+  });
+
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.search-pill')) results.classList.remove('open');
+  });
+}
+
+/* =============================================================
+   INIT
+   ============================================================= */
+document.getElementById('filter-btn').addEventListener('click', () => {
+  state.drawerOpen = !state.drawerOpen;
+  document.getElementById('drawer').classList.toggle('open', state.drawerOpen);
+});
+document.getElementById('drawer-close').addEventListener('click', () => {
+  state.drawerOpen = false;
+  document.getElementById('drawer').classList.remove('open');
+});
+
+setupSearch();
+renderDrawer();
+renderPins();
+renderJourneys();
+</script>
+</body>
+</html>
