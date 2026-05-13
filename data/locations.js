@@ -64,5 +64,10 @@ window.LOCATIONS = {
   'timnah':          { name: 'תמנה',                altName: 'תל בטש',                  coords: [31.7817, 34.9072], category: 'city' },
   'etam-rock':       { name: 'סלע עיטם',            altName: 'מחבוא שמשון, שפלת יהודה', coords: [31.7000, 35.0300], category: 'mountain' },
   'lehi':            { name: 'לחי',                 altName: 'עין הקורא, מקום הקרב',   coords: [31.7200, 34.9600], category: 'battle' },
-  'valley-sorek':    { name: 'עמק שורק',            altName: 'נחל שורק, מקום דלילה',   coords: [31.7500, 34.9700], category: 'water' },
+  'valley-sorek':    { name: 'עמק שורק',            altName: 'נחל שורק, מקום דלילה',         coords: [31.7500, 34.9700], category: 'water' },
+  'bethlehem-judah': { name: 'בית לחם יהודה',      altName: 'בית לחם, עיר דוד',              coords: [31.7042, 35.2066], category: 'city' },
+  'beit-mikha':      { name: 'בית מיכה',            altName: 'הר אפרים, בית הפסל',            coords: [32.0200, 35.1500], category: 'cult' },
+  'kiriat-yearim':   { name: 'קרית יערים',          altName: 'בעלת יהודה, תל אבו גוש',       coords: [31.8081, 35.1100], category: 'city' },
+  'laish-dan':       { name: 'דן (ליש)',             altName: 'תל דן, צפון הארץ',              coords: [33.2483, 35.6511], category: 'city' },
+  'shiloh':          { name: 'שילה',                altName: 'חרבת סילון, מקום המשכן',        coords: [32.0556, 35.2861], category: 'cult' },
 };

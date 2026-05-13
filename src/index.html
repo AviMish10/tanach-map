@@ -434,7 +434,7 @@
   .place-panel.open { transform: translateX(0); }
 
   .place-panel-header {
-    padding: 18px 20px 14px;
+    padding: 18px 20px 20px;
     background: linear-gradient(135deg, var(--emerald) 0%, var(--emerald-dark) 100%);
     color: white;
     position: relative;
@@ -893,11 +893,14 @@
 <script src="../data/chapters/shoftim-14.js"></script>
 <script src="../data/chapters/shoftim-15.js"></script>
 <script src="../data/chapters/shoftim-16.js"></script>
+<script src="../data/chapters/shoftim-17.js"></script>
+<script src="../data/chapters/shoftim-18.js"></script>
 <script src="../data/journeys/gideon-midian.js"></script>
 <script src="../data/journeys/avimelech-shechem.js"></script>
 <script src="../data/journeys/yiftach-ammon.js"></script>
 <script src="../data/journeys/shimshon-timnah.js"></script>
 <script src="../data/journeys/shimshon-delilah.js"></script>
+<script src="../data/journeys/dan-migration.js"></script>
 <script src="../data/journeys/farewell-eliyahu-elisha.js"></script>
 <script src="../data/journeys/ehud-moab.js"></script>
 <script src="../data/journeys/deborah-barak.js"></script>
@@ -969,6 +972,13 @@ function toHebrewNumeral(n) {
   if (result.length > 1) result = result.slice(0, -1) + '״' + result.slice(-1);
   return result;
 }
+
+const BOOK_ORDER = {
+  'בראשית': 1, 'שמות': 2, 'ויקרא': 3, 'במדבר': 4, 'דברים': 5,
+  'יהושע': 6, 'שופטים': 7, 'שמואל א': 8, 'שמואל ב': 9,
+  'מלכים א': 10, 'מלכים ב': 11, 'ישעיהו': 12, 'ירמיהו': 13,
+  'יחזקאל': 14, 'תהלים': 22, 'משלי': 23,
+};
 
 function chaptersForLocation(locId) {
   const results = [];
@@ -1094,8 +1104,12 @@ function selectLocation(locId) {
   const relatedJourneys = journeysForLocation(locId);
   const cat = CATEGORIES[loc.category];
 
-  // Sort chapters: ones the user has "studied" first (those in CHAPTERS), then placeholders
-  const sorted = chapters; // for now all are real
+  const sorted = chapters.sort((a, b) => {
+    const orderA = BOOK_ORDER[a.chapter.book] ?? 99;
+    const orderB = BOOK_ORDER[b.chapter.book] ?? 99;
+    if (orderA !== orderB) return orderA - orderB;
+    return a.chapter.num - b.chapter.num;
+  });
 
   const chaptersHtml = sorted.map(({ chapterId, chapter, appearance }) => `
     <div class="chapter-card">
@@ -1184,15 +1198,6 @@ function renderDrawer() {
     catCounts[l.category] = (catCounts[l.category] || 0) + 1;
   });
 
-  // Character → journeys
-  const charJourneys = {};
-  Object.entries(JOURNEYS).forEach(([jid, j]) => {
-    j.characters.forEach(cid => {
-      if (!charJourneys[cid]) charJourneys[cid] = [];
-      charJourneys[cid].push({ id: jid, journey: j });
-    });
-  });
-
   const categoriesHtml = Object.entries(CATEGORIES).map(([key, cat]) => {
     const count = catCounts[key] || 0;
     const checked = state.categoryFilters.has(key);
@@ -1206,29 +1211,14 @@ function renderDrawer() {
     `;
   }).join('');
 
-  const charactersHtml = Object.entries(CHARACTERS).map(([cid, char]) => {
-    const journeys = charJourneys[cid] || [];
-    const isExpanded = state.expandedCharacter === cid;
+  const journeysHtml = Object.entries(JOURNEYS).map(([id, journey]) => {
+    const active = state.activeJourneys.has(id);
     return `
-      <div class="character-card ${isExpanded ? 'expanded' : ''}">
-        <div class="character-header" data-char="${cid}">
-          <div class="character-name">${char.name}</div>
-          <div class="character-count">${journeys.length}</div>
-          <div class="character-chevron">▾</div>
-        </div>
-        <div class="character-journeys">
-          ${journeys.map(({ id, journey }) => {
-            const active = state.activeJourneys.has(id);
-            return `
-              <div class="journey-toggle ${active ? 'active' : ''}" data-journey="${id}">
-                <div class="journey-color" style="background:${journey.color}"></div>
-                <div class="journey-name">${journey.name}</div>
-                <div class="journey-meta">${journey.stops.length} תחנות</div>
-                ${active ? '<span style="color:var(--gold);font-weight:700">✓</span>' : ''}
-              </div>
-            `;
-          }).join('')}
-        </div>
+      <div class="journey-toggle ${active ? 'active' : ''}" data-journey="${id}">
+        <div class="journey-color" style="background:${journey.color}"></div>
+        <div class="journey-name">${journey.name}</div>
+        <div class="journey-meta">${journey.stops.length} תחנות</div>
+        ${active ? '<span style="color:var(--gold);font-weight:700">✓</span>' : ''}
       </div>
     `;
   }).join('');
@@ -1243,10 +1233,10 @@ function renderDrawer() {
     </div>
     <div class="filter-section">
       <div class="filter-section-title">
-        <span>דמויות ומסעות</span>
+        <span>מסעות</span>
         ${state.activeJourneys.size ? `<button class="filter-clear" data-action="clear-journeys">נקה</button>` : ''}
       </div>
-      <div>${charactersHtml}</div>
+      <div>${journeysHtml}</div>
     </div>
   `;
 
@@ -1259,13 +1249,6 @@ function renderDrawer() {
       renderDrawer();
       renderPins();
       updateFilterBadge();
-    });
-  });
-  body.querySelectorAll('[data-char]').forEach(el => {
-    el.addEventListener('click', () => {
-      const cid = el.dataset.char;
-      state.expandedCharacter = state.expandedCharacter === cid ? null : cid;
-      renderDrawer();
     });
   });
   body.querySelectorAll('[data-journey]').forEach(el => {
