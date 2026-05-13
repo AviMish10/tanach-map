@@ -29,6 +29,7 @@ window.CHARACTERS = {
   'shimshon':      { name: 'שמשון בן מנוח' },
   'manoah':        { name: 'מנוח מצרעה' },
   'delilah':       { name: 'דלילה' },
-  'mikha-ephraim': { name: 'מיכיהו איש הר אפרים' },
-  'dan-tribe':     { name: 'שבט דן' },
+  'mikha-ephraim':      { name: 'מיכיהו איש הר אפרים' },
+  'dan-tribe':          { name: 'שבט דן' },
+  'levite-har-ephraim': { name: 'הלוי מהר אפרים' },
 };

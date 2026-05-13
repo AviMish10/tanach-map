@@ -70,4 +70,8 @@ window.LOCATIONS = {
   'kiriat-yearim':   { name: 'קרית יערים',          altName: 'בעלת יהודה, תל אבו גוש',       coords: [31.8081, 35.1100], category: 'city' },
   'laish-dan':       { name: 'דן (ליש)',             altName: 'תל דן, צפון הארץ',              coords: [33.2483, 35.6511], category: 'city' },
   'shiloh':          { name: 'שילה',                altName: 'חרבת סילון, מקום המשכן',        coords: [32.0556, 35.2861], category: 'cult' },
+  'gibeah':          { name: 'גבעה',               altName: 'גבעת בנימין, תל אל-פול',        coords: [31.8350, 35.2150], category: 'city' },
+  'mizpah-benjamin': { name: 'מצפה בנימין',         altName: 'תל אנ-נצבה',                    coords: [31.8883, 35.2153], category: 'cult' },
+  'sela-rimmon':     { name: 'סלע הרמון',           altName: 'ואדי מכוך, מחבוא ניצולי בנימין', coords: [31.9600, 35.4000], category: 'mountain' },
+  'jabesh-gilead':   { name: 'יבש גלעד',            altName: 'ואדי יאביס, עבר הירדן',          coords: [32.4800, 35.6500], category: 'city' },
 };
