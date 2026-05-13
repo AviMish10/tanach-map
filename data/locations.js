@@ -59,4 +59,10 @@ window.LOCATIONS = {
   'bethlehem-zebulun': { name: 'בית לחם זבולון',     altName: 'בית לחם הגלילית',        coords: [32.7000, 35.0800], category: 'city' },
   'aijalon-zebulun': { name: 'אילון זבולון',          altName: 'קבר אילון הזבולוני',     coords: [32.8800, 35.0500], category: 'city' },
   'pirathon':        { name: 'פרעתון',               altName: 'פרעתה, הר העמלקי',       coords: [32.1820, 35.1280], category: 'city' },
+  'zorah':           { name: 'צרעה',                altName: 'תל צרעה, נחלת דן',       coords: [31.7753, 34.9897], category: 'city' },
+  'mahaneh-dan':     { name: 'מחנה דן',             altName: 'בין צרעה לאשתאול',       coords: [31.7780, 34.9980], category: 'cult' },
+  'timnah':          { name: 'תמנה',                altName: 'תל בטש',                  coords: [31.7817, 34.9072], category: 'city' },
+  'etam-rock':       { name: 'סלע עיטם',            altName: 'מחבוא שמשון, שפלת יהודה', coords: [31.7000, 35.0300], category: 'mountain' },
+  'lehi':            { name: 'לחי',                 altName: 'עין הקורא, מקום הקרב',   coords: [31.7200, 34.9600], category: 'battle' },
+  'valley-sorek':    { name: 'עמק שורק',            altName: 'נחל שורק, מקום דלילה',   coords: [31.7500, 34.9700], category: 'water' },
 };

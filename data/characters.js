@@ -26,4 +26,7 @@ window.CHARACTERS = {
   'ibzan':     { name: 'אבצן מבית לחם' },
   'elon-z':    { name: 'אילון הזבולוני' },
   'abdon':     { name: 'עבדון בן הלל הפרעתוני' },
+  'shimshon':  { name: 'שמשון בן מנוח' },
+  'manoah':    { name: 'מנוח מצרעה' },
+  'delilah':   { name: 'דלילה' },
 };
