@@ -113,11 +113,12 @@ window.LOCATIONS = {
   'bachurim':      { name: 'בחורים',            altName: 'ח׳ א-ראס, מדרון הזית מזרחה',           coords: [31.7858, 35.2750], category: 'city' },
   'bor-hasirah':   { name: 'בור הסירה',         altName: 'עין סרה, צפון חברון',                   coords: [31.5600, 35.0890], category: 'water' },
   'beeroth':       { name: 'בארות',             altName: 'אל-בירה, ליד רמאללה, נחלת בנימין',      coords: [31.9083, 35.2178], category: 'city' },
-  'emek-refaim':   { name: 'עמק הרפאים',        altName: 'עמק הרפאים, גרמן קולוני, דרום ירושלים', coords: [31.7610, 35.2007], category: 'region' },
+  'emek-refaim':   { name: 'עמק הרפאים',        altName: 'עמק הרפאים, גרמן קולוני, דרום ירושלים', coords: [31.7610, 35.2007], category: 'battle' },
   'baal-peratzim': { name: 'בעל פרצים',         altName: 'בעל פרצים, עמק הרפאים, מערב ירושלים',  coords: [31.7637, 35.1891], category: 'city' },
   'obed-edom':     { name: 'בית עובד אדום',     altName: 'בית עובד אדום הגיתי, מערב ירושלים',    coords: [31.7850, 35.1680], category: 'city' },
   'moab':          { name: 'מואב',              altName: 'ממלכת מואב, דיבון, מזרח ים המלח',        coords: [31.5042, 35.7831], category: 'foreign' },
   'aram-tzova':    { name: 'ארם צובה',          altName: 'ממלכת ארם צובה, צפון-מזרח ישראל',        coords: [33.8000, 36.5000], category: 'foreign' },
   'lo-davar':      { name: 'לו-דבר',            altName: 'אבדר, גלעד, מזרח הירדן',                 coords: [32.3600, 35.8400], category: 'city' },
   'helam':         { name: 'חֵלָם',             altName: 'חלם, מזרח הירדן, שדה קרב עם ארם',        coords: [32.8000, 36.5000], category: 'battle' },
+  'baal-hazor':   { name: 'בעל חצור',          altName: 'הר בעל חצור, גבל עצור, שומרון',          coords: [31.9738, 35.2850], category: 'mountain' },
 };
