@@ -32,4 +32,5 @@ window.CHARACTERS = {
   'mikha-ephraim':      { name: 'מיכיהו איש הר אפרים' },
   'dan-tribe':          { name: 'שבט דן' },
   'levite-har-ephraim': { name: 'הלוי מהר אפרים' },
+  'aron-haberit':       { name: 'ארון הברית' },
 };

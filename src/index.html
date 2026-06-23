@@ -434,11 +434,10 @@
   .place-panel.open { transform: translateX(0); }
 
   .place-panel-header {
-    padding: 18px 20px 20px;
+    padding: 18px 20px 22px;
     background: linear-gradient(135deg, var(--emerald) 0%, var(--emerald-dark) 100%);
     color: white;
     position: relative;
-    overflow: hidden;
   }
   .place-panel-header::before {
     content: '';
@@ -499,17 +498,6 @@
     position: relative;
     z-index: 1;
   }
-  .place-stats {
-    display: flex;
-    gap: 14px;
-    margin-top: 10px;
-    font-size: 12px;
-    color: rgba(255,255,255,0.85);
-    position: relative;
-    z-index: 1;
-  }
-  .place-stat-icon { color: var(--gold-soft); }
-
   #place-panel-content {
     display: flex;
     flex-direction: column;
@@ -898,6 +886,47 @@
 <script src="../data/chapters/shoftim-19.js"></script>
 <script src="../data/chapters/shoftim-20.js"></script>
 <script src="../data/chapters/shoftim-21.js"></script>
+<script src="../data/chapters/shmuel-a-1.js"></script>
+<script src="../data/chapters/shmuel-a-2.js"></script>
+<script src="../data/chapters/shmuel-a-3.js"></script>
+<script src="../data/chapters/shmuel-a-4.js"></script>
+<script src="../data/chapters/shmuel-a-5.js"></script>
+<script src="../data/chapters/shmuel-a-6.js"></script>
+<script src="../data/chapters/shmuel-a-7.js"></script>
+<script src="../data/chapters/shmuel-a-8.js"></script>
+<script src="../data/chapters/shmuel-a-9.js"></script>
+<script src="../data/chapters/shmuel-a-10.js"></script>
+<script src="../data/chapters/shmuel-a-11.js"></script>
+<script src="../data/chapters/shmuel-a-12.js"></script>
+<script src="../data/chapters/shmuel-a-13.js"></script>
+<script src="../data/chapters/shmuel-a-14.js"></script>
+<script src="../data/chapters/shmuel-a-15.js"></script>
+<script src="../data/chapters/shmuel-a-16.js"></script>
+<script src="../data/chapters/shmuel-a-17.js"></script>
+<script src="../data/chapters/shmuel-a-18.js"></script>
+<script src="../data/chapters/shmuel-a-19.js"></script>
+<script src="../data/chapters/shmuel-a-20.js"></script>
+<script src="../data/chapters/shmuel-a-21.js"></script>
+<script src="../data/chapters/shmuel-a-22.js"></script>
+<script src="../data/chapters/shmuel-a-23.js"></script>
+<script src="../data/chapters/shmuel-a-24.js"></script>
+<script src="../data/chapters/shmuel-a-25.js"></script>
+<script src="../data/chapters/shmuel-a-26.js"></script>
+<script src="../data/chapters/shmuel-a-27.js"></script>
+<script src="../data/chapters/shmuel-a-28.js"></script>
+<script src="../data/chapters/shmuel-a-29.js"></script>
+<script src="../data/chapters/shmuel-a-30.js"></script>
+<script src="../data/chapters/shmuel-a-31.js"></script>
+<script src="../data/chapters/shmuel-b-1.js"></script>
+<script src="../data/chapters/shmuel-b-2.js"></script>
+<script src="../data/chapters/shmuel-b-3.js"></script>
+<script src="../data/chapters/shmuel-b-4.js"></script>
+<script src="../data/chapters/shmuel-b-5.js"></script>
+<script src="../data/chapters/shmuel-b-6.js"></script>
+<script src="../data/chapters/shmuel-b-7.js"></script>
+<script src="../data/chapters/shmuel-b-8.js"></script>
+<script src="../data/chapters/shmuel-b-9.js"></script>
+<script src="../data/chapters/shmuel-b-10.js"></script>
 <script src="../data/journeys/gideon-midian.js"></script>
 <script src="../data/journeys/avimelech-shechem.js"></script>
 <script src="../data/journeys/yiftach-ammon.js"></script>
@@ -909,6 +938,7 @@
 <script src="../data/journeys/ehud-moab.js"></script>
 <script src="../data/journeys/deborah-barak.js"></script>
 <script src="../data/journeys/judah-conquest.js"></script>
+<script src="../data/journeys/aron-haberit.js"></script>
 <script>
 
 /* =============================================================
@@ -917,6 +947,7 @@
 const state = {
   categoryFilters: new Set(Object.keys(CATEGORIES)), // all on by default
   activeJourneys: new Set(),
+  bookFilters: new Set(Object.values(CHAPTERS).map(c => c.book)), // all on by default
   selectedLocationId: null,
   drawerOpen: false,
   placePanelOpen: false,
@@ -934,19 +965,19 @@ const map = L.map('map', {
 
 L.control.zoom({ position: 'topleft' }); // already in default
 
-const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '&copy; OpenStreetMap',
-  maxZoom: 18,
-  subdomains: 'abc'
+const googleHeLayer = L.tileLayer('https://mt{s}.google.com/vt/lyrs=m&hl=iw&x={x}&y={y}&z={z}', {
+  attribution: '&copy; Google Maps',
+  maxZoom: 20,
+  subdomains: ['0', '1', '2', '3']
 });
 const ihmLayer = L.tileLayer('https://israelhiking.osm.org.il/Hebrew/Tiles/{z}/{x}/{y}.png', {
   attribution: '&copy; Israel Hiking Map',
   maxZoom: 16
 });
 
-osmLayer.addTo(map);
+googleHeLayer.addTo(map);
 L.control.layers({
-  'מפה רגילה': osmLayer,
+  'מפה רגילה': googleHeLayer,
   'מפה טופוגרפית': ihmLayer
 }, null, { position: 'bottomleft' }).addTo(map);
 
@@ -983,6 +1014,17 @@ const BOOK_ORDER = {
   'מלכים א': 10, 'מלכים ב': 11, 'ישעיהו': 12, 'ירמיהו': 13,
   'יחזקאל': 14, 'תהלים': 22, 'משלי': 23,
 };
+
+function getBookList() {
+  const books = new Set(Object.values(CHAPTERS).map(c => c.book));
+  return Array.from(books).sort((a, b) => (BOOK_ORDER[a] ?? 99) - (BOOK_ORDER[b] ?? 99));
+}
+
+function locationMatchesBookFilter(locId) {
+  const chapters = chaptersForLocation(locId);
+  if (!chapters.length) return true; // unprocessed locations always show
+  return chapters.some(({ chapter }) => state.bookFilters.has(chapter.book));
+}
 
 function chaptersForLocation(locId) {
   const results = [];
@@ -1033,15 +1075,16 @@ function renderPins() {
   markerCluster.clearLayers();
   Object.keys(markers).forEach(k => delete markers[k]);
 
-  // Visible locations = those matching category filter
+  // Visible locations = those matching category + book filters
   Object.entries(LOCATIONS).forEach(([locId, loc]) => {
     if (!state.categoryFilters.has(loc.category)) return;
+    if (!locationMatchesBookFilter(locId)) return;
     const icon = makePinIcon(locId, locId === state.selectedLocationId);
     const marker = L.marker(loc.coords, { icon });
     const chapters = chaptersForLocation(locId);
     marker.bindPopup(`
       <div class="popup-name">${loc.name}</div>
-      <div class="popup-meta">${chapters.length} פרק${chapters.length === 1 ? '' : 'ים'} · ${CATEGORIES[loc.category].label}</div>
+      <div class="popup-meta">${CATEGORIES[loc.category].label}</div>
     `, { offset: [0, -10] });
     marker.on('click', () => selectLocation(locId));
     markers[locId] = marker;
@@ -1160,10 +1203,6 @@ function selectLocation(locId) {
       <span class="place-category-badge">${cat.label}</span>
       <div class="place-name">${loc.name}</div>
       ${loc.altName ? `<div class="place-name-alt">${loc.altName}</div>` : ''}
-      <div class="place-stats">
-        <div><span class="place-stat-icon">📖</span> ${chapters.length} פרק${chapters.length === 1 ? '' : 'ים'}</div>
-        ${relatedJourneys.length ? `<div><span class="place-stat-icon">⤵</span> ${relatedJourneys.length} מסע${relatedJourneys.length === 1 ? '' : 'ים'}</div>` : ''}
-      </div>
     </div>
     <div class="place-panel-body">
       ${journeysHtml}
@@ -1215,6 +1254,23 @@ function renderDrawer() {
     `;
   }).join('');
 
+  const bookLocCounts = {};
+  Object.values(CHAPTERS).forEach(ch => {
+    if (!bookLocCounts[ch.book]) bookLocCounts[ch.book] = new Set();
+    ch.appearances.forEach(a => bookLocCounts[ch.book].add(a.locationId));
+  });
+  const booksHtml = getBookList().map(book => {
+    const checked = state.bookFilters.has(book);
+    const count = bookLocCounts[book] ? bookLocCounts[book].size : 0;
+    return `
+      <div class="check-item ${checked ? 'checked' : ''}" data-book="${book}">
+        <div class="check-box"></div>
+        <div>${book}</div>
+        <div class="check-count">${count} מקומות</div>
+      </div>
+    `;
+  }).join('');
+
   const journeysHtml = Object.entries(JOURNEYS).map(([id, journey]) => {
     const active = state.activeJourneys.has(id);
     return `
@@ -1237,6 +1293,13 @@ function renderDrawer() {
     </div>
     <div class="filter-section">
       <div class="filter-section-title">
+        <span>ספרים</span>
+        ${state.bookFilters.size < getBookList().length ? `<button class="filter-clear" data-action="all-books">הצג הכל</button>` : ''}
+      </div>
+      <div class="check-list">${booksHtml}</div>
+    </div>
+    <div class="filter-section">
+      <div class="filter-section-title">
         <span>מסעות</span>
         ${state.activeJourneys.size ? `<button class="filter-clear" data-action="clear-journeys">נקה</button>` : ''}
       </div>
@@ -1250,6 +1313,24 @@ function renderDrawer() {
       const cat = el.dataset.cat;
       if (state.categoryFilters.has(cat)) state.categoryFilters.delete(cat);
       else state.categoryFilters.add(cat);
+      renderDrawer();
+      renderPins();
+      updateFilterBadge();
+    });
+  });
+  body.querySelectorAll('[data-book]').forEach(el => {
+    el.addEventListener('click', () => {
+      const book = el.dataset.book;
+      if (state.bookFilters.has(book)) state.bookFilters.delete(book);
+      else state.bookFilters.add(book);
+      renderDrawer();
+      renderPins();
+      updateFilterBadge();
+    });
+  });
+  body.querySelectorAll('[data-action="all-books"]').forEach(el => {
+    el.addEventListener('click', () => {
+      state.bookFilters = new Set(getBookList());
       renderDrawer();
       renderPins();
       updateFilterBadge();
@@ -1288,7 +1369,8 @@ function toggleJourney(jid) {
 function updateFilterBadge() {
   const badge = document.getElementById('filter-badge');
   const total = state.activeJourneys.size +
-                (Object.keys(CATEGORIES).length - state.categoryFilters.size);
+                (Object.keys(CATEGORIES).length - state.categoryFilters.size) +
+                (getBookList().length - state.bookFilters.size);
   if (total > 0) {
     badge.style.display = 'inline-block';
     badge.textContent = total;
