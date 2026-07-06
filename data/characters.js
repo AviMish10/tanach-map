@@ -33,4 +33,10 @@ window.CHARACTERS = {
   'dan-tribe':          { name: 'שבט דן' },
   'levite-har-ephraim': { name: 'הלוי מהר אפרים' },
   'aron-haberit':       { name: 'ארון הברית' },
+  'samuel':    { name: 'שמואל הנביא' },
+  'saul':      { name: 'שאול המלך' },
+  'david':     { name: 'דוד המלך' },
+  'absalom':   { name: 'אבשלום בן דוד' },
+  'joab':      { name: 'יואב בן צרויה' },
+  'jeroboam':  { name: 'ירבעם בן נבט' },
 };

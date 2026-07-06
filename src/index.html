@@ -412,6 +412,146 @@
     font-size: 10px;
     color: var(--ink-light);
   }
+  .journey-book-header {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--ink-light);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 10px 8px 3px;
+    border-top: 1px solid var(--sand);
+    margin-top: 4px;
+  }
+  .journey-book-header.first {
+    border-top: none;
+    margin-top: 0;
+    padding-top: 2px;
+  }
+
+  /* ===== CHAPTER TEXT READER ===== */
+  .read-chapter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 10px;
+    padding: 5px 12px;
+    background: transparent;
+    border: 1.5px solid var(--gold);
+    border-radius: 20px;
+    color: var(--ink-soft);
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    font-family: inherit;
+  }
+  .read-chapter-btn:hover { background: var(--gold); color: var(--ink); }
+
+  .text-reader {
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    background: var(--cream);
+    display: flex;
+    flex-direction: column;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+    direction: rtl;
+  }
+  .text-reader.open { transform: translateY(0); }
+
+  .text-reader-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    background: linear-gradient(135deg, var(--emerald-dark) 0%, var(--emerald) 100%);
+    color: white;
+    flex-shrink: 0;
+    border-bottom: 2px solid var(--gold);
+  }
+  .text-reader-close {
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s;
+  }
+  .text-reader-close:hover { background: rgba(255,255,255,0.3); }
+  .text-reader-title {
+    flex: 1;
+    font-size: 17px;
+    font-weight: 700;
+  }
+  .text-reader-nav {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .text-reader-nav button {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+  }
+  .text-reader-nav button:hover { background: rgba(255,255,255,0.3); }
+  .text-reader-nav button:disabled { opacity: 0.3; cursor: default; }
+  .text-reader-nav .chapter-label {
+    font-size: 13px;
+    min-width: 60px;
+    text-align: center;
+    opacity: 0.9;
+  }
+
+  .text-reader-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 20px 40px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .text-reader-body::-webkit-scrollbar { width: 6px; }
+  .text-reader-body::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
+
+  .text-verse {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+    line-height: 1.8;
+    font-size: 17px;
+  }
+  .text-verse-num {
+    color: var(--gold);
+    font-size: 11px;
+    font-weight: 700;
+    min-width: 22px;
+    padding-top: 4px;
+    flex-shrink: 0;
+    text-align: center;
+  }
+  .text-verse-text { color: var(--ink); }
+  .text-not-loaded {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--ink-light);
+    font-size: 14px;
+    line-height: 2;
+  }
 
   /* ===== PLACE PANEL (slides up from bottom on mobile, side on desktop) ===== */
   .place-panel {
@@ -724,6 +864,61 @@
   .pin-desert    { background: linear-gradient(135deg, #e8c365 0%, #b8801c 100%); }
   .pin-foreign   { background: linear-gradient(135deg, #4a4f8a 0%, #2a2e5a 100%); }
 
+  /* ===== MY LOCATION ===== */
+  .locate-btn {
+    position: absolute;
+    bottom: 120px;
+    left: 10px;
+    z-index: 1000;
+    width: 36px;
+    height: 36px;
+    background: white;
+    border: 2px solid rgba(0,0,0,0.2);
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.3);
+    transition: background 0.15s;
+  }
+  .locate-btn:hover { background: #f4f4f4; }
+  .locate-btn.locating { background: #e8f0fe; border-color: #4285f4; }
+  .locate-btn.located  { background: #e6f4ea; border-color: #34a853; }
+
+  .user-location-dot {
+    width: 18px;
+    height: 18px;
+    position: relative;
+  }
+  .user-location-dot::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: #4285f4;
+    border-radius: 50%;
+    border: 2.5px solid white;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+    z-index: 2;
+  }
+  .user-location-dot::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    background: rgba(66, 133, 244, 0.2);
+    border-radius: 50%;
+    animation: location-pulse 2s ease-out infinite;
+    z-index: 1;
+  }
+  @keyframes location-pulse {
+    0%   { transform: translate(-50%, -50%) scale(0.4); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(1.8); opacity: 0; }
+  }
+
   /* Journey-stop badge (number) — overlays the pin when in a journey */
   .pin-stop-number {
     position: absolute;
@@ -845,6 +1040,25 @@
     <div class="drawer-body" id="drawer-body"></div>
   </div>
 
+  <!-- Chapter text reader -->
+  <div class="text-reader" id="text-reader">
+    <div class="text-reader-header">
+      <button class="text-reader-close" id="text-reader-close">×</button>
+      <div class="text-reader-title" id="text-reader-title"></div>
+      <div class="text-reader-nav">
+        <button id="text-reader-prev" title="פרק קודם">›</button>
+        <span class="chapter-label" id="text-reader-chapter-label"></span>
+        <button id="text-reader-next" title="פרק הבא">‹</button>
+      </div>
+    </div>
+    <div class="text-reader-body" id="text-reader-body"></div>
+  </div>
+
+  <!-- Map control buttons -->
+  <button class="locate-btn" id="reset-view-btn" title="חזרה לתצוגת ישראל" style="bottom:160px">⌂</button>
+  <button class="locate-btn" id="locate-btn" title="מיקומי">⊕</button>
+  <div id="locate-status" style="display:none;position:absolute;bottom:165px;left:10px;z-index:1001;background:white;border:1px solid #ccc;border-radius:6px;padding:6px 10px;font-size:12px;max-width:220px;box-shadow:0 2px 6px rgba(0,0,0,0.2);direction:ltr;"></div>
+
   <!-- Place panel -->
   <div class="place-panel" id="place-panel">
     <div id="place-panel-content"></div>
@@ -930,6 +1144,39 @@
 <script src="../data/chapters/shmuel-b-11.js"></script>
 <script src="../data/chapters/shmuel-b-12.js"></script>
 <script src="../data/chapters/shmuel-b-13.js"></script>
+    <script src="../data/chapters/shmuel-b-14.js"></script>
+    <script src="../data/chapters/shmuel-b-15.js"></script>
+    <script src="../data/chapters/shmuel-b-16.js"></script>
+    <script src="../data/chapters/shmuel-b-17.js"></script>
+    <script src="../data/chapters/shmuel-b-18.js"></script>
+    <script src="../data/chapters/shmuel-b-19.js"></script>
+    <script src="../data/chapters/shmuel-b-20.js"></script>
+    <script src="../data/chapters/shmuel-b-21.js"></script>
+    <script src="../data/chapters/shmuel-b-22.js"></script>
+    <script src="../data/chapters/shmuel-b-23.js"></script>
+    <script src="../data/chapters/shmuel-b-24.js"></script>
+    <script src="../data/chapters/melachim-a-1.js"></script>
+    <script src="../data/chapters/melachim-a-2.js"></script>
+    <script src="../data/chapters/melachim-a-3.js"></script>
+    <script src="../data/chapters/melachim-a-4.js"></script>
+    <script src="../data/chapters/melachim-a-5.js"></script>
+    <script src="../data/chapters/melachim-a-6.js"></script>
+    <script src="../data/chapters/melachim-a-7.js"></script>
+    <script src="../data/chapters/melachim-a-8.js"></script>
+    <script src="../data/chapters/melachim-a-9.js"></script>
+    <script src="../data/chapters/melachim-a-10.js"></script>
+    <script src="../data/chapters/melachim-a-11.js"></script>
+    <script src="../data/chapters/melachim-a-12.js"></script>
+    <script src="../data/chapters/melachim-a-13.js"></script>
+    <script src="../data/chapters/melachim-a-14.js"></script>
+    <script src="../data/chapters/melachim-a-15.js"></script>
+    <script src="../data/chapters/melachim-a-16.js"></script>
+    <script src="../data/chapters/melachim-a-17.js"></script>
+    <script src="../data/chapters/melachim-a-18.js"></script>
+    <script src="../data/chapters/melachim-a-19.js"></script>
+    <script src="../data/chapters/melachim-a-20.js"></script>
+    <script src="../data/chapters/melachim-a-21.js"></script>
+    <script src="../data/chapters/melachim-a-22.js"></script>
 <script src="../data/journeys/gideon-midian.js"></script>
 <script src="../data/journeys/avimelech-shechem.js"></script>
 <script src="../data/journeys/yiftach-ammon.js"></script>
@@ -942,6 +1189,22 @@
 <script src="../data/journeys/deborah-barak.js"></script>
 <script src="../data/journeys/judah-conquest.js"></script>
 <script src="../data/journeys/aron-haberit.js"></script>
+<script src="../data/journeys/samuel-circuit.js"></script>
+<script src="../data/journeys/saul-donkeys.js"></script>
+<script src="../data/journeys/david-flight-saul.js"></script>
+<script src="../data/journeys/david-amalek.js"></script>
+<script src="../data/journeys/david-flight-absalom.js"></script>
+<script src="../data/journeys/david-return-jerusalem.js"></script>
+<script src="../data/journeys/joab-sheba.js"></script>
+<script src="../data/journeys/jeroboam-exile.js"></script>
+<script src="../data/journeys/eliyahu-kerit-carmel.js"></script>
+<script src="../data/journeys/eliyahu-horev.js"></script>
+<script src="../data/journeys/saul-jabesh-gilead.js"></script>
+<script src="../data/journeys/ark-to-jerusalem.js"></script>
+<script src="../data/text/shoftim.js"></script>
+<script src="../data/text/shmuel-a.js"></script>
+<script src="../data/text/shmuel-b.js"></script>
+<script src="../data/text/melachim-a.js"></script>
 <script>
 
 /* =============================================================
@@ -966,7 +1229,8 @@ const map = L.map('map', {
   zoomSnap: 0.5
 }).setView([31.95, 35.35], 10);
 
-L.control.zoom({ position: 'topleft' }); // already in default
+// Scale bar
+L.control.scale({ position: 'bottomright', imperial: false, maxWidth: 120 }).addTo(map);
 
 const googleHeLayer = L.tileLayer('https://mt{s}.google.com/vt/lyrs=m&hl=iw&x={x}&y={y}&z={z}', {
   attribution: '&copy; Google Maps',
@@ -1182,6 +1446,9 @@ function selectLocation(locId) {
             ${appearance.characters.map(c => `<span class="character-pill">${c}</span>`).join('')}
           </div>
         ` : ''}
+        <button class="read-chapter-btn" data-book="${chapter.book}" data-chapter="${chapter.num}">
+          📖 קרא פרק מלא
+        </button>
       </div>
     </div>
   `).join('');
@@ -1218,6 +1485,10 @@ function selectLocation(locId) {
 
   document.querySelectorAll('[data-journey]').forEach(btn => {
     btn.addEventListener('click', () => toggleJourney(btn.dataset.journey));
+  });
+
+  document.querySelectorAll('.read-chapter-btn').forEach(btn => {
+    btn.addEventListener('click', () => openTextReader(btn.dataset.book, parseInt(btn.dataset.chapter)));
   });
 
   renderPins(); // re-render to highlight active pin
@@ -1274,17 +1545,38 @@ function renderDrawer() {
     `;
   }).join('');
 
-  const journeysHtml = Object.entries(JOURNEYS).map(([id, journey]) => {
-    const active = state.activeJourneys.has(id);
-    return `
-      <div class="journey-toggle ${active ? 'active' : ''}" data-journey="${id}">
-        <div class="journey-color" style="background:${journey.color}"></div>
-        <div class="journey-name">${journey.name}</div>
-        <div class="journey-meta">${journey.stops.length} תחנות</div>
-        ${active ? '<span style="color:var(--gold);font-weight:700">✓</span>' : ''}
-      </div>
-    `;
-  }).join('');
+  const JOURNEY_BOOK_ORDER = ['שופטים', 'שמואל א', 'שמואל ב', 'מלכים א', 'מלכים ב'];
+  function journeyBook(journey) {
+    const id = journey.chapterId || '';
+    if (id.startsWith('shoftim'))     return 'שופטים';
+    if (id.startsWith('shmuel-a'))    return 'שמואל א';
+    if (id.startsWith('shmuel-b'))    return 'שמואל ב';
+    if (id.startsWith('melachim-a'))  return 'מלכים א';
+    if (id.startsWith('melachim-b') || id.startsWith('mb')) return 'מלכים ב';
+    return 'אחר';
+  }
+  const journeyGroups = {};
+  Object.entries(JOURNEYS).forEach(([id, journey]) => {
+    const book = journeyBook(journey);
+    if (!journeyGroups[book]) journeyGroups[book] = [];
+    journeyGroups[book].push({ id, journey });
+  });
+  const journeysHtml = JOURNEY_BOOK_ORDER
+    .filter(book => journeyGroups[book])
+    .map((book, bookIdx) => {
+      const items = journeyGroups[book].map(({ id, journey }) => {
+        const active = state.activeJourneys.has(id);
+        return `
+          <div class="journey-toggle ${active ? 'active' : ''}" data-journey="${id}">
+            <div class="journey-color" style="background:${journey.color}"></div>
+            <div class="journey-name">${journey.name}</div>
+            <div class="journey-meta">${journey.stops.length} תחנות</div>
+            ${active ? '<span style="color:var(--gold);font-weight:700">✓</span>' : ''}
+          </div>
+        `;
+      }).join('');
+      return `<div class="journey-book-header${bookIdx === 0 ? ' first' : ''}">${book}</div>${items}`;
+    }).join('');
 
   body.innerHTML = `
     <div class="filter-section">
@@ -1361,11 +1653,28 @@ function renderDrawer() {
 }
 
 function toggleJourney(jid) {
-  if (state.activeJourneys.has(jid)) state.activeJourneys.delete(jid);
-  else state.activeJourneys.add(jid);
+  const wasActive = state.activeJourneys.has(jid);
+  if (wasActive) {
+    state.activeJourneys.delete(jid);
+  } else {
+    state.activeJourneys.add(jid);
+    // Fit map to show all stops of the newly activated journey
+    const journey = JOURNEYS[jid];
+    if (journey && journey.stops.length > 0) {
+      const coords = journey.stops
+        .map(s => LOCATIONS[s.locationId])
+        .filter(Boolean)
+        .map(l => l.coords);
+      if (coords.length > 1) {
+        map.fitBounds(L.latLngBounds(coords), { padding: [60, 60], maxZoom: 11, duration: 0.8 });
+      } else if (coords.length === 1) {
+        map.flyTo(coords[0], 11, { duration: 0.8 });
+      }
+    }
+  }
   renderJourneys();
   renderDrawer();
-  if (state.selectedLocationId) selectLocation(state.selectedLocationId); // refresh button label
+  if (state.selectedLocationId) selectLocation(state.selectedLocationId);
   updateFilterBadge();
 }
 
@@ -1449,6 +1758,81 @@ function setupSearch() {
 /* =============================================================
    INIT
    ============================================================= */
+document.getElementById('reset-view-btn').addEventListener('click', () => {
+  map.flyTo([31.95, 35.35], 8, { duration: 0.8 });
+});
+
+/* =============================================================
+   CHAPTER TEXT READER
+   ============================================================= */
+const BOOK_TEXT_KEY = {
+  'שופטים':  'shoftim',
+  'שמואל א': 'shmuel-a',
+  'שמואל ב': 'shmuel-b',
+  'מלכים א': 'melachim-a',
+};
+
+let readerState = { bookHebrew: null, bookKey: null, chapter: null, totalChapters: null };
+
+function openTextReader(bookHebrew, chapterNum) {
+  const bookKey = BOOK_TEXT_KEY[bookHebrew];
+  if (!bookKey) return;
+  const textData = (window.TANACH_TEXT || {})[bookKey];
+  readerState = {
+    bookHebrew,
+    bookKey,
+    chapter: chapterNum,
+    totalChapters: textData ? textData.totalChapters : chapterNum,
+  };
+  renderTextReader();
+  document.getElementById('text-reader').classList.add('open');
+}
+
+function renderTextReader() {
+  const { bookHebrew, bookKey, chapter, totalChapters } = readerState;
+  const textData = (window.TANACH_TEXT || {})[bookKey];
+
+  document.getElementById('text-reader-title').textContent = `${bookHebrew}`;
+  document.getElementById('text-reader-chapter-label').textContent = `פרק ${toHebrewNumeral(chapter)}`;
+  document.getElementById('text-reader-prev').disabled = chapter <= 1;
+  document.getElementById('text-reader-next').disabled = chapter >= totalChapters;
+
+  const body = document.getElementById('text-reader-body');
+  if (!textData) {
+    body.innerHTML = `
+      <div class="text-not-loaded">
+        <div style="font-size:32px;margin-bottom:12px">📜</div>
+        <div>טקסט הפרק טרם נטען.</div>
+        <div style="margin-top:8px;font-size:12px">הרץ את הסקריפט:<br><code style="background:var(--cream-2);padding:2px 6px;border-radius:4px">node scripts/fetch-tanach-text.js</code></div>
+      </div>`;
+    return;
+  }
+
+  const verses = textData.chapters[chapter] || [];
+  if (!verses.length) {
+    body.innerHTML = `<div class="text-not-loaded">הפרק ריק או לא נמצא.</div>`;
+    return;
+  }
+
+  body.innerHTML = verses.map((v, i) => `
+    <div class="text-verse">
+      <span class="text-verse-num">${i + 1}</span>
+      <span class="text-verse-text">${v}</span>
+    </div>
+  `).join('');
+  body.scrollTop = 0;
+}
+
+document.getElementById('text-reader-close').addEventListener('click', () => {
+  document.getElementById('text-reader').classList.remove('open');
+});
+document.getElementById('text-reader-prev').addEventListener('click', () => {
+  if (readerState.chapter > 1) { readerState.chapter--; renderTextReader(); }
+});
+document.getElementById('text-reader-next').addEventListener('click', () => {
+  if (readerState.chapter < readerState.totalChapters) { readerState.chapter++; renderTextReader(); }
+});
+
 document.getElementById('filter-btn').addEventListener('click', () => {
   state.drawerOpen = !state.drawerOpen;
   document.getElementById('drawer').classList.toggle('open', state.drawerOpen);
@@ -1462,6 +1846,99 @@ setupSearch();
 renderDrawer();
 renderPins();
 renderJourneys();
+
+/* =============================================================
+   MY LOCATION
+   ============================================================= */
+(function setupLocate() {
+  const btn = document.getElementById('locate-btn');
+  const statusEl = document.getElementById('locate-status');
+  if (!navigator.geolocation) { btn.style.display = 'none'; return; }
+
+  let locationMarker = null;
+  let accuracyCircle = null;
+  let watchId = null;
+  let located = false;
+
+  function showStatus(msg, color) {
+    statusEl.style.display = 'block';
+    statusEl.style.borderColor = color || '#ccc';
+    statusEl.textContent = msg;
+    clearTimeout(statusEl._hide);
+    if (color === 'green') {
+      statusEl._hide = setTimeout(() => { statusEl.style.display = 'none'; }, 3000);
+    }
+  }
+
+  function placeMarker(lat, lng, accuracy) {
+    const icon = L.divIcon({
+      className: '',
+      html: '<div class="user-location-dot"></div>',
+      iconSize: [18, 18],
+      iconAnchor: [9, 9],
+    });
+    if (locationMarker) {
+      locationMarker.setLatLng([lat, lng]);
+      accuracyCircle.setLatLng([lat, lng]).setRadius(accuracy);
+    } else {
+      accuracyCircle = L.circle([lat, lng], {
+        radius: accuracy,
+        color: '#4285f4',
+        fillColor: '#4285f4',
+        fillOpacity: 0.08,
+        weight: 1,
+        interactive: false,
+      }).addTo(map);
+      locationMarker = L.marker([lat, lng], { icon, zIndexOffset: 1000, interactive: false }).addTo(map);
+    }
+  }
+
+  function onSuccess(pos) {
+    const { latitude: lat, longitude: lng, accuracy } = pos.coords;
+    btn.classList.remove('locating');
+    btn.classList.add('located');
+    btn.textContent = '⊕';
+    showStatus(`✓ נמצא (דיוק: ${Math.round(accuracy)}מ')`, 'green');
+    placeMarker(lat, lng, accuracy);
+    if (!located) {
+      map.flyTo([lat, lng], Math.max(map.getZoom(), 12), { duration: 1 });
+      located = true;
+    }
+  }
+
+  function onError(err) {
+    const msgs = {
+      1: 'Error 1: Permission denied — גישה נדחתה',
+      2: 'Error 2: Position unavailable — מיקום לא זמין',
+      3: 'Error 3: Timeout — פג הזמן',
+    };
+    const msg = msgs[err.code] || `Error ${err.code}: ${err.message}`;
+    showStatus(msg, 'red');
+    btn.classList.remove('locating');
+    btn.textContent = '⊕';
+    watchId = null;
+    located = false;
+  }
+
+  btn.addEventListener('click', () => {
+    if (watchId !== null && located) {
+      if (locationMarker) map.flyTo(locationMarker.getLatLng(), Math.max(map.getZoom(), 12), { duration: 0.8 });
+      return;
+    }
+    if (watchId !== null) navigator.geolocation.clearWatch(watchId);
+    watchId = null;
+    located = false;
+
+    btn.classList.add('locating');
+    btn.textContent = '⊙';
+    showStatus('מאתר מיקום...', '#4285f4');
+
+    watchId = navigator.geolocation.watchPosition(onSuccess, onError, {
+      enableHighAccuracy: false,
+      maximumAge: 0,
+    });
+  });
+})();
 </script>
 </body>
 </html>
